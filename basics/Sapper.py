@@ -46,7 +46,27 @@ class GamePole:
                 else:
                     print("#", end=" ")
             print()
+        print("=" * self.size * 2)
+
+    def sellect_cell(self, x: int, y: int):
+        if all((isinstance(x, int), isinstance(y, int))):
+            cell = self.pool[x][y]
+            if cell.mine:
+                print("BOOM💥")
+            else:
+                cell.fl_open = True
+
+        else:
+            raise ValueError("The coordinates of the cell must be an integer")
+
+    def open_all_cells(self):
+        for row in self.pool:
+            for cell in row:
+                if not cell.fl_open:
+                    cell.fl_open = True
 
 
-# g = GamePole(5, 5)
-# g.show()
+g = GamePole(5, 5)
+g.show()
+g.open_all_cells()
+g.show()
