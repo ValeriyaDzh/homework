@@ -9,6 +9,8 @@ class Cell:
         self.fl_open: bool = False
 
     def __repr__(self):
+        if self.mine:
+            return f"{"*" if self.fl_open else "#"}"
         return f"{self.around_mines if self.fl_open else "#"}"
 
 
@@ -53,7 +55,7 @@ class GamePole:
             if cell.fl_open:
                 return False
             if cell.mine:
-                print("BOOM💥")
+                # print("BOOM💥")
                 return True
 
             cell.fl_open = True
@@ -63,6 +65,7 @@ class GamePole:
                         if i == x and j == y:
                             continue
                         self.sellect_cell(i, j)
+
             return False
         else:
             raise ValueError("The coordinates of the cell must be an integer")
