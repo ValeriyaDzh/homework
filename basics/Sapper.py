@@ -58,30 +58,22 @@ class GamePole:
     def sellect_cell(self, x: int, y: int):
         if all((isinstance(x, int), isinstance(y, int))):
             cell = self.pool[x][y]
+            if cell.fl_open:
+                return False
             if cell.mine:
                 print("BOOM💥")
-                return
-            else:
-                self._open(x, y)
-
-        else:
-            raise ValueError("The coordinates of the cell must be an integer")
-
-    def _open(self, x: int, y: int):
-        queue = [(x, y)]
-
-        while queue:
-            qx, qy = queue.pop()
-            cell = self.pool[qx][qy]
-            if cell.fl_open or cell.mine:
-                continue
+                return True
 
             cell.fl_open = True
             if cell.around_mines == 0:
-                cors = self.get_neighbors(x, y, self.size)
-                for cx, cy in cors:
-                    if (cx, cy) not in queue:
-                        queue.append((cx, cy))
+                for i in range(max(0, x - 1), min(x + 2, self.size)):
+                    for j in range(max(0, y - 1), min(y + 2, self.size)):
+                        if i == x and j == y:
+                            continue
+                        self.sellect_cell(i, j)
+            return False
+        else:
+            raise ValueError("The coordinates of the cell must be an integer")
 
     @staticmethod
     def get_neighbors(x: int, y: int, max_int: int) -> list[tuple[int]]:
@@ -99,6 +91,8 @@ class GamePole:
             for cell in row:
                 if not cell.fl_open:
                     cell.fl_open = True
+
+    def start(self): ...
 
 
 g = GamePole(5, 5)
