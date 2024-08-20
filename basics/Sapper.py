@@ -21,22 +21,21 @@ class GamePole:
         self._add_mines()
         # for row in self.pool:
         #     print(row)
-        # print(self.size**2)
 
     def _add_mines(self):
-        mines_cor = self._get_mines_cor()
+        mines_cor = self._get_mines_cor(self.mine, self.size - 1)
         for cor in mines_cor:
             self.pool[cor[0]][cor[1]].mine = True
 
-    def _get_mines_cor(self) -> list[tuple[int]]:
+    @staticmethod
+    def _get_mines_cor(quantity: int, max_cor: int) -> set[tuple[int]]:
         coordinates = set()
-        while len(coordinates) < self.mine:
-            x = random.randint(0, self.size - 1)
-            y = random.randint(0, self.size - 1)
+        while len(coordinates) < quantity:
+            x = random.randint(0, max_cor)
+            y = random.randint(0, max_cor)
             coordinates.add((x, y))
 
         return coordinates
 
 
-g = GamePole(5, 5)
-print(g._get_mines_cor())
+g = GamePole(5, 14)
