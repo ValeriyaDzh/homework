@@ -22,8 +22,18 @@ class GamePole:
 
     def _add_mines(self):
         mines_cor = self._get_mines_cor(self.mine, self.size - 1)
+        print(mines_cor)
         for cor in mines_cor:
             self.pool[cor[0]][cor[1]].mine = True
+            self._add_around_mines(cor[0], cor[1])
+
+    def _add_around_mines(self, x: int, y: int):
+        for i in range(max(0, x - 1), min(x + 2, self.size)):
+            for j in range(max(0, y - 1), min(y + 2, self.size)):
+                if i == x and j == y:
+                    continue
+                else:
+                    self.pool[i][j].around_mines += 1
 
     @staticmethod
     def _get_mines_cor(quantity: int, max_cor: int) -> set[tuple[int]]:
@@ -67,6 +77,5 @@ class GamePole:
 
 
 g = GamePole(5, 5)
-g.show()
 g.open_all_cells()
 g.show()
