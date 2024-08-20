@@ -19,8 +19,6 @@ class GamePole:
         self.mine = mine
         self.pool = [[Cell() for _ in range(self.size)] for _ in range(self.size)]
         self._add_mines()
-        # for row in self.pool:
-        #     print(row)
 
     def _add_mines(self):
         mines_cor = self._get_mines_cor(self.mine, self.size - 1)
@@ -37,5 +35,18 @@ class GamePole:
 
         return coordinates
 
+    def show(self):
+        for row in self.pool:
+            for cell in row:
+                if cell.fl_open:
+                    if cell.mine:
+                        print("*", end=" ")
+                        continue
+                    print(cell.around_mines, end=" ")
+                else:
+                    print("#", end=" ")
+            print()
 
-g = GamePole(5, 14)
+
+# g = GamePole(5, 5)
+# g.show()
