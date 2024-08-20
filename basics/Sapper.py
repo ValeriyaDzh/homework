@@ -20,11 +20,11 @@ class GamePole:
         self.size = size
         self.mine = mine
         self.pool = [[Cell() for _ in range(self.size)] for _ in range(self.size)]
+        self.save_cell = size**2 - mine
         self._add_mines()
 
     def _add_mines(self):
         mines_cor = self._get_mines_cor(self.mine, self.size - 1)
-        print(mines_cor)
         for x, y in mines_cor:
             self.pool[x][y].mine = True
             self._add_around_mines(x, y)
@@ -55,10 +55,10 @@ class GamePole:
             if cell.fl_open:
                 return False
             if cell.mine:
-                # print("BOOM💥")
                 return True
 
             cell.fl_open = True
+            self.save_cell -= 1
             if cell.around_mines == 0:
                 for i in range(max(0, x - 1), min(x + 2, self.size)):
                     for j in range(max(0, y - 1), min(y + 2, self.size)):
@@ -68,7 +68,7 @@ class GamePole:
 
             return False
         else:
-            raise ValueError("The coordinates of the cell must be an integer")
+            raise ValueError
 
     @staticmethod
     def get_neighbors(x: int, y: int, max_int: int) -> list[tuple[int]]:
@@ -87,12 +87,28 @@ class GamePole:
                 if not cell.fl_open:
                     cell.fl_open = True
 
-    def start(self): ...
+    def start(self):
+        retry = True
+        while True:
+            try:
+                self.show()
+                ux, uy = map(int, input("Enter the coordinates of the cell separated by a space: \n").split())
+                if 0 <= ux <= self.size and 0 <= uy <= self.size:
+                    if self.sellect_cell(ux, uy):
+                        print("BOOM💥\n Game over")
+                        self.open_all_cells()
+                        self.show()
+                        break
+                    else:
+                        if self.save_cell == 0:
+                            print("Victory🎉")
+                            break
+                else:
+                    raise ValueError
+            except ValueError:
+                print("Еhe coordinates of the cell must be a positive number, no more than the size of the field")
+
 
 
 g = GamePole(5, 5)
-g.show()
-g.sellect_cell(1, 1)
-g.show()
-g.open_all_cells()
-g.show()
+g.start()
