@@ -55,6 +55,8 @@ class LinckedList:
             else:
                 self.head = None
                 self.tail = None
+        else:
+            print("List is already empty")
 
     def get_data(self) -> list[str]:
         values = []
