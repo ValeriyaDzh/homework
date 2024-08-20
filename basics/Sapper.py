@@ -92,21 +92,23 @@ class GamePole:
         while True:
             try:
                 self.show()
-                ux, uy = map(int, input("Enter the coordinates of the cell separated by a space: \n").split())
-                if 0 <= ux <= self.size and 0 <= uy <= self.size:
+                ux, uy = map(int, input("Enter the coordinates of the cell separated by a space(row column): \n").split())
+                if 0 <= ux and 0 <= uy:
                     if self.sellect_cell(ux, uy):
-                        print("BOOM💥\n Game over")
+                        print("\nBOOM💥\nGame over\n")
                         self.open_all_cells()
                         self.show()
                         break
                     else:
                         if self.save_cell == 0:
-                            print("Victory🎉")
+                            print("\nVictory🎉\n")
+                            self.open_all_cells()
+                            self.show()
                             break
                 else:
                     raise ValueError
-            except ValueError:
-                print("Еhe coordinates of the cell must be a positive number, no more than the size of the field")
+            except (ValueError, IndexError):
+                print("\n!!The coordinates of the cell must be a positive number, no more than the size of the field!!")
 
 
 
