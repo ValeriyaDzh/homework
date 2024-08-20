@@ -9,7 +9,7 @@ class Cell:
         self.fl_open: bool = False
 
     def __repr__(self):
-        return f"{self.mine}"
+        return f"{self.around_mines if self.fl_open else "#"}"
 
 
 class GamePole:
@@ -44,15 +44,7 @@ class GamePole:
 
     def show(self):
         for row in self.pool:
-            for cell in row:
-                if cell.fl_open:
-                    if cell.mine:
-                        print("*", end=" ")
-                        continue
-                    print(cell.around_mines, end=" ")
-                else:
-                    print("#", end=" ")
-            print()
+            print(" ".join(str(cell) for cell in row))
         print("=" * self.size * 2)
 
     def sellect_cell(self, x: int, y: int):
