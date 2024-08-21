@@ -122,5 +122,4 @@ class GamePole:
             return False
 
 
-g = GamePole(5, 5)
-g.start()
+pole_game = GamePole(10, 12)
