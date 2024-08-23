@@ -53,7 +53,7 @@ class GamePole:
         if all((isinstance(x, int), isinstance(y, int))):
             cell = self.pool[x][y]
             if cell.fl_open:
-                return False
+                return
             if cell.mine:
                 return True
 
@@ -66,10 +66,10 @@ class GamePole:
                             continue
                         self.sellect_cell(i, j)
 
-            return False
+            return
         else:
             raise ValueError
-
+        
     @staticmethod
     def get_neighbors(x: int, y: int, max_int: int) -> list[tuple[int]]:
         neighbors_cor = []
@@ -94,8 +94,8 @@ class GamePole:
             try:
                 self.show()
                 ux, uy = map(int, input("\nEnter the coordinates of the cell separated by a space(row column): \n").split())
-                if 0 <= ux < self.size and 0 <= uy < self.size:
-                    if self.sellect_cell(ux, uy):
+                if 1 <= ux < self.size and 1 <= uy < self.size:
+                    if self.sellect_cell(ux - 1, uy - 1):
                         print("\nBOOM💥\nGame over\n")
                         self.open_all_cells()
                         self.show()
@@ -123,3 +123,4 @@ class GamePole:
 
 
 pole_game = GamePole(10, 12)
+pole_game.start()
