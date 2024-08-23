@@ -44,7 +44,9 @@ class GamePole:
 
         return coordinates
 
-    def show(self):
+    def show(self, all=False):
+        if all:
+            self._open_all_cells()
         for row in self.pool:
             print(" ".join(str(cell) for cell in row))
         print("=" * self.size * 2)
@@ -81,7 +83,7 @@ class GamePole:
 
         return neighbors_cor
 
-    def open_all_cells(self):
+    def _open_all_cells(self):
         for row in self.pool:
             for cell in row:
                 if not cell.fl_open:
@@ -94,17 +96,15 @@ class GamePole:
             try:
                 self.show()
                 ux, uy = map(int, input("\nEnter the coordinates of the cell separated by a space(row column): \n").split())
-                if 1 <= ux < self.size and 1 <= uy < self.size:
+                if 1 <= ux < self.size + 1 and 1 <= uy < self.size + 1:
                     if self.sellect_cell(ux - 1, uy - 1):
                         print("\nBOOM💥\nGame over\n")
-                        self.open_all_cells()
-                        self.show()
+                        self.show(all=True)
                         retry = self.get_retry()
                     else:
                         if self.save_cell == 0:
                             print("\nVictory🎉\n")
-                            self.open_all_cells()
-                            self.show()
+                            self.show(all=True)
                             retry = self.get_retry()
                 else:
                     raise ValueError
@@ -123,4 +123,3 @@ class GamePole:
 
 
 pole_game = GamePole(10, 12)
-pole_game.start()
