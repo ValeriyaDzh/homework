@@ -90,9 +90,8 @@ class GamePole:
                     cell.fl_open = True
 
     def start(self):
-        retry = True
 
-        while retry:
+        while True:
             try:
                 self.show()
                 ux, uy = map(int, input("\nEnter the coordinates of the cell separated by a space(row column): \n").split())
@@ -100,26 +99,18 @@ class GamePole:
                     if self.sellect_cell(ux - 1, uy - 1):
                         print("\nBOOM💥\nGame over\n")
                         self.show(all=True)
-                        retry = self.get_retry()
+                        break
                     else:
                         if self.save_cell == 0:
                             print("\nVictory🎉\n")
                             self.show(all=True)
-                            retry = self.get_retry()
+                            print("\nThank you for playing!\nSee you next time!")
+                            break
                 else:
                     raise ValueError
             except ValueError:
                 print("\n!!The coordinates of the cell must be a positive number, no more than the size of the field!!\n")
 
-    @staticmethod    
-    def get_retry() -> bool:
-
-        answer = input("\nShall we play it again?[yes/no]\n")
-        if answer.strip().lower() == "yes":
-            return True
-        else:
-            print("\nThank you for playing!\nSee you next time!")
-            return False
-
 
 pole_game = GamePole(10, 12)
+pole_game.start()
