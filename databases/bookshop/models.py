@@ -1,6 +1,6 @@
 from sqlalchemy import Column, String, Integer, ForeignKey, Float, DateTime
 
-from .database import Base
+from database import Base
 
 
 ###BOOK###
