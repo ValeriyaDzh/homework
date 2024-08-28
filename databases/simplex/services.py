@@ -56,7 +56,7 @@ class SpimexDatabase:
     def __init__(self):
         self.session = Session()
 
-    def seve(self, obj: list[SpimexTradingResults]):
+    def save(self, obj: list[SpimexTradingResults]):
 
         with self.session as s:
             s.add_all(obj)
@@ -102,18 +102,37 @@ class SpimexParser:
 
     def _get_necessary_data(self, file) -> pd.DataFrame:
         df = pd.read_excel(file, sheet_name=0, header=6)
-        print(df.columns[14])
         df[df.columns[14]] = pd.to_numeric(df[df.columns[14]], errors="coerce")
         df = df[df[df.columns[14]] > 0]
         df = df.iloc[:-2, [1, 2, 3, 4, 5, -1]]
         df[df.columns[3]] = pd.to_numeric(df[df.columns[3]], errors="coerce")
         df[df.columns[4]] = pd.to_numeric(df[df.columns[4]], errors="coerce")
-        df.to_excel("some_2file.xlsx")
-        print(type(df))
+
         return df
 
+    def start(self):
 
-# par = SpimexParser()
-# print(par._get_necessary_data("mmmm.xls"))
-s = SpimexDownloader()
-print(s.get_files_links(2024, 8))
+        for date, link in self.links:
+            response = requests.get(url=link)
+            self.em.write(response.content)
+
+            df_data = self._get_necessary_data(self.file)
+            prepared_obj = []
+            for _, row in df_data.iterrows():
+                columns = row.to_list()
+                obj = self.db.prepare_data(
+                    ep_id=columns[0],
+                    ep_n=columns[1],
+                    oil_id=columns[0][:4],
+                    db_id=columns[0][4:7],
+                    db_n=columns[2],
+                    dt_id=columns[0][-1],
+                    volume=columns[3],
+                    total=columns[4],
+                    count=columns[5],
+                    date=date,
+                )
+                prepared_obj.append(obj)
+
+            self.db.save(prepared_obj)
+            self.em.delete()
