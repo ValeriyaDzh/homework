@@ -1,4 +1,5 @@
 from sqlalchemy import Column, String, Integer, ForeignKey, Float, DateTime
+from sqlalchemy.orm import relationship
 
 from database import Base
 
@@ -10,6 +11,8 @@ class Genre(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False, unique=True)
+
+    books = relationship("Book", back_populates="genre", uselist=True)
 
 
 class Author(Base):
@@ -30,6 +33,8 @@ class Book(Base):
     genre_id = Column(Integer, ForeignKey("genre.id"))
     price = Column(Float)
     amount = Column(Integer, default=0)
+
+    genre = relationship("Genre", back_populates="books", uselist=False)
 
 
 ###CUSTOMER###
