@@ -22,6 +22,8 @@ class Author(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
 
+    books = relationship("Book", back_populates="author", uselist=True)
+
 
 class Book(Base):
 
@@ -35,6 +37,7 @@ class Book(Base):
     amount = Column(Integer, default=0)
 
     genre = relationship("Genre", back_populates="books", uselist=False)
+    author = relationship("Author", back_populates="books", uselist=False)
 
 
 ###CUSTOMER###
@@ -44,7 +47,9 @@ class City(Base):
 
     id = Column(Integer, primary_key=True)
     city = Column(String, nullable=False, unique=True)
-    days_delivery = Column(Integer)  # ???
+    days_delivery = Column(Integer)
+
+    clients = relationship("Client", back_populates="city", uselist=True)
 
 
 class Client(Base):
@@ -55,6 +60,8 @@ class Client(Base):
     name = Column(String)
     city_id = Column(Integer, ForeignKey("city.id"))
     email = Column(String, nullable=False, unique=True)
+
+    city = relationship("City", back_populates="clients", uselist=False)
 
 
 ###ORDER###
