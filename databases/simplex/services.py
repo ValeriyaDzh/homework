@@ -113,7 +113,7 @@ class SpimexParser:
     def start(self):
 
         for date, link in self.links:
-            response = requests.get(url=link)
+            response = requests.get(url=link, timeout=10)
             self.em.write(response.content)
 
             df_data = self._get_necessary_data(self.file)
