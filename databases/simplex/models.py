@@ -1,6 +1,7 @@
 import uuid
-from datetime import datetime, UTC
-from sqlalchemy import UUID, Column, String, Integer, Date, DateTime
+from datetime import datetime, date
+from sqlalchemy import UUID
+from sqlalchemy.orm import Mapped, mapped_column
 
 from database import Base
 
@@ -9,22 +10,20 @@ class SpimexTradingResults(Base):
 
     __tablename__ = "spimex_trading_results"
 
-    id = Column(
-        UUID(as_uuid=True),
-        primary_key=True,
-        default=uuid.uuid4,
-        unique=True,
-        nullable=False,
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
     )
-    exchange_product_id = Column(String, nullable=False)
-    exchange_product_name = Column(String, nullable=False)
-    oil_id = Column(String, nullable=False)
-    delivery_basis_id = Column(String, nullable=False)
-    delivery_basis_name = Column(String, nullable=False)
-    delivery_type_id = Column(String, nullable=False)
-    volume = Column(Integer, nullable=False)
-    total = Column(Integer, nullable=False)
-    count = Column(Integer, nullable=False)
-    date = Column(Date)
-    created_on = Column(DateTime, default=datetime.now)
-    updated_on = Column(DateTime, default=datetime.now, onupdate=datetime.now)
+    exchange_product_id: Mapped[str]
+    exchange_product_name: Mapped[str]
+    oil_id: Mapped[str]
+    delivery_basis_id: Mapped[str]
+    delivery_basis_name: Mapped[str]
+    delivery_type_id: Mapped[str]
+    volume: Mapped[int] = mapped_column(nullable=False)
+    total: Mapped[int] = mapped_column(nullable=False)
+    count: Mapped[int] = mapped_column(nullable=False)
+    date: Mapped[date]
+    created_on: Mapped[datetime] = mapped_column(default=datetime.now)
+    updated_on: Mapped[datetime] = mapped_column(
+        default=datetime.now, onupdate=datetime.now
+    )
