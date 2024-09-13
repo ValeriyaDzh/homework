@@ -39,16 +39,16 @@ class SpimexDownloader:
 
 class SpimexParser:
 
-    def __init__(self, year: int, month: int):
+    def __init__(self, year: int, month: int) -> None:
         self.file = "spimex_data.xls"
         self.links = SpimexDownloader.get_files_links(year, month)
         self.session = Session()
 
-    def _write_to_file(self, data):
+    def _write_to_file(self, data) -> None:
         with open(self.file, "wb") as file:
             file.write(data)
 
-    def _delete_file(self):
+    def _delete_file(self) -> None:
         if os.path.exists(self.file):
             os.remove(self.file)
 
@@ -62,13 +62,13 @@ class SpimexParser:
 
         return df
 
-    def _seve_to_db(self, obj: list[SpimexTradingResults]):
+    def _seve_to_db(self, obj: list[SpimexTradingResults]) -> None:
         with self.session as s:
             s.add_all(obj)
             s.commit()
             s.close()
 
-    def start(self):
+    def start(self) -> None:
 
         for date, link in self.links:
             response = requests.get(url=link, timeout=10)
