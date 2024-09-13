@@ -8,20 +8,6 @@ from database import Session
 from models import SpimexTradingResults
 
 
-class ExcelManager:
-
-    def __init__(self, filename):
-        self.filename = filename
-
-    def write(self, data):
-        with open(self.filename, "wb") as file:
-            file.write(data)
-
-    def delete(self):
-        if os.path.exists(self.filename):
-            os.remove(self.filename)
-
-
 class SpimexDownloader:
 
     @classmethod
@@ -51,54 +37,20 @@ class SpimexDownloader:
         return response.status_code == 200
 
 
-class SpimexDatabase:
-
-    def __init__(self):
-        self.session = Session()
-
-    def save(self, obj: list[SpimexTradingResults]):
-
-        with self.session as s:
-            s.add_all(obj)
-            s.commit()
-            s.close()
-
-    def prepare_data(
-        self,
-        ep_id: str,
-        ep_n: str,
-        oil_id: str,
-        db_id: str,
-        db_n: str,
-        dt_id: str,
-        volume: int,
-        total: int,
-        count: int,
-        date: str,
-    ):
-
-        spimex_treding_res = SpimexTradingResults(
-            exchange_product_id=ep_id,
-            exchange_product_name=ep_n,
-            oil_id=oil_id,
-            delivery_basis_id=db_id,
-            delivery_basis_name=db_n,
-            delivery_type_id=dt_id,
-            volume=volume,
-            total=total,
-            count=count,
-            date=date,
-        )
-        return spimex_treding_res
-
-
 class SpimexParser:
 
-    def __init__(self, year: int, month: int):
+    def __init__(self, year: int, month: int) -> None:
         self.file = "spimex_data.xls"
-        self.em = ExcelManager(self.file)
         self.links = SpimexDownloader.get_files_links(year, month)
-        self.db = SpimexDatabase()
+        self.session = Session()
+
+    def _write_to_file(self, data) -> None:
+        with open(self.file, "wb") as file:
+            file.write(data)
+
+    def _delete_file(self) -> None:
+        if os.path.exists(self.file):
+            os.remove(self.file)
 
     def _get_necessary_data(self, file) -> pd.DataFrame:
         df = pd.read_excel(file, sheet_name=0, header=6)
@@ -110,23 +62,29 @@ class SpimexParser:
 
         return df
 
-    def start(self):
+    def _seve_to_db(self, obj: list[SpimexTradingResults]) -> None:
+        with self.session as s:
+            s.add_all(obj)
+            s.commit()
+            s.close()
+
+    def start(self) -> None:
 
         for date, link in self.links:
             response = requests.get(url=link, timeout=10)
-            self.em.write(response.content)
+            self._write_to_file(response.content)
 
             df_data = self._get_necessary_data(self.file)
             prepared_obj = []
             for _, row in df_data.iterrows():
                 columns = row.to_list()
-                obj = self.db.prepare_data(
-                    ep_id=columns[0],
-                    ep_n=columns[1],
+                obj = SpimexTradingResults(
+                    exchange_product_id=columns[0],
+                    exchange_product_name=columns[1],
                     oil_id=columns[0][:4],
-                    db_id=columns[0][4:7],
-                    db_n=columns[2],
-                    dt_id=columns[0][-1],
+                    delivery_basis_id=columns[0][4:7],
+                    delivery_basis_name=columns[2],
+                    delivery_type_id=columns[0][-1],
                     volume=columns[3],
                     total=columns[4],
                     count=columns[5],
@@ -134,5 +92,5 @@ class SpimexParser:
                 )
                 prepared_obj.append(obj)
 
-            self.db.save(prepared_obj)
-            self.em.delete()
+            self._seve_to_db(prepared_obj)
+            self._delete_file()
