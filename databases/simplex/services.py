@@ -8,20 +8,6 @@ from database import Session
 from models import SpimexTradingResults
 
 
-class ExcelManager:
-
-    def __init__(self, filename):
-        self.filename = filename
-
-    def write(self, data):
-        with open(self.filename, "wb") as file:
-            file.write(data)
-
-    def delete(self):
-        if os.path.exists(self.filename):
-            os.remove(self.filename)
-
-
 class SpimexDownloader:
 
     @classmethod
@@ -55,9 +41,16 @@ class SpimexParser:
 
     def __init__(self, year: int, month: int):
         self.file = "spimex_data.xls"
-        self.em = ExcelManager(self.file)
         self.links = SpimexDownloader.get_files_links(year, month)
         self.session = Session()
+
+    def _write_to_file(self, data):
+        with open(self.file, "wb") as file:
+            file.write(data)
+
+    def _delete_file(self):
+        if os.path.exists(self.file):
+            os.remove(self.file)
 
     def _get_necessary_data(self, file) -> pd.DataFrame:
         df = pd.read_excel(file, sheet_name=0, header=6)
@@ -79,7 +72,7 @@ class SpimexParser:
 
         for date, link in self.links:
             response = requests.get(url=link, timeout=10)
-            self.em.write(response.content)
+            self._write_to_file(response.content)
 
             df_data = self._get_necessary_data(self.file)
             prepared_obj = []
@@ -100,4 +93,4 @@ class SpimexParser:
                 prepared_obj.append(obj)
 
             self._seve_to_db(prepared_obj)
-            self.em.delete()
+            self._delete_file()
